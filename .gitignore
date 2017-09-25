@@ -1,0 +1,8 @@
+#Dependencies
+node_modules/
+yarn.lock
+
+
+#File System stuff
+.DS_Store
+Thumbs.db
