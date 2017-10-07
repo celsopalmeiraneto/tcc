@@ -6,3 +6,5 @@ yarn.lock
 #File System stuff
 .DS_Store
 Thumbs.db
+
+crawler/res.txt

@@ -1,5 +1,5 @@
 "use strict";
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
 class SoccerMatchesBrasileiroSerieA_CBF {
   constructor() {
@@ -9,12 +9,12 @@ class SoccerMatchesBrasileiroSerieA_CBF {
   read(){
     return new Promise((resolve, reject) => {
       this.readMatchesFromWebSite()
-      .then((value) => {
-        return resolve(value);
-      })
-      .catch((e)=> {
-        return reject(e);
-      });
+        .then((value) => {
+          return resolve(value);
+        })
+        .catch((e)=> {
+          return reject(e);
+        });
     });
   }
 
@@ -23,69 +23,69 @@ class SoccerMatchesBrasileiroSerieA_CBF {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    await page.goto('http://www.cbf.com.br/competicoes/brasileiro-serie-a/tabela/2017');
+    await page.goto("http://www.cbf.com.br/competicoes/brasileiro-serie-a/tabela/2017");
 
-    page.on('console', (...args) => {
+    page.on("console", (...args) => {
       console.log("PAGE CONSOLE: ", ...args);
     });
 
+
     const roundsAndResults = await page.evaluate(() => {
+
+      function readGameInfo(roundName, date, line){
+        let gameScore = line.querySelector(".game-score")
+          .innerText
+          .trim()
+          .split("X")
+          .map(a => a.trim());
+
+        let gameLocation = line.querySelector(".full-game-location")
+          .innerText
+          .trim()
+          .split("\t");
+
+        let gameCode = Number.parseInt(gameLocation.shift().split(" ").pop());
+
+        gameLocation = gameLocation.pop();
+
+        return {
+          roundName: roundName,
+          date : date,
+          time : line.querySelector(".full-game-time").innerText.trim(),
+          homeTeam : line.querySelector(".game-team-1").innerText.trim(),
+          awayTeam : line.querySelector(".game-team-2").innerText.trim(),
+          homeScore : Number.parseInt(gameScore[0]),
+          awayScore : Number.parseInt(gameScore[1]),
+          gameLocation : gameLocation,
+          gameCode : gameCode
+        };
+      }
+
       let rounds = Array.from(document.querySelectorAll(".item,.tabela-jogos"));
       return rounds.map((round) => {
         var roundName = null;
         var date = null;
         return Array.from(round.children).reduce((acc, roundLine) => {
-          if(roundLine.nodeName == "H3"){
+
+          if(roundLine.nodeName == "H3")
             roundName = roundLine.innerText;
-            return acc;
-          }
 
-          if(roundLine.classList.contains("headline")){
+          if(roundLine.classList.contains("headline"))
             date = roundLine.innerText.trim();
-            return acc;
-          }
 
-          if(roundLine.classList.contains("row")){
-            let gameScore = roundLine.querySelector(".game-score")
-            .innerText
-            .trim()
-            .split("X")
-            .map(a => a.trim());
+          if(roundLine.classList.contains("row"))
+            acc.push(readGameInfo(roundName, date, roundLine));
 
-            let gameLocation = roundLine.querySelector(".full-game-location")
-            .innerText
-            .trim()
-            .split("\t");
-
-            let gameCode = Number.parseInt(gameLocation.shift().split(" ").pop());
-
-            gameLocation = gameLocation.pop();
-
-
-            acc.push({
-              roundName: roundName,
-              date : date,
-              time : roundLine.querySelector(".full-game-time").innerText.trim(),
-              homeTeam : roundLine.querySelector(".game-team-1").innerText.trim(),
-              awayTeam : roundLine.querySelector(".game-team-2").innerText.trim(),
-              homeScore : Number.parseInt(gameScore[0]),
-              awayScore : Number.parseInt(gameScore[1]),
-              gameLocation : gameLocation,
-              gameCode : gameCode
-            });
-            return acc;
-          }
+          return acc;
         }, []);
       });
     });
+
     await page.close();
     await browser.close();
 
     return roundsAndResults;
-
-    function
   }
-
 
 }
 
