@@ -25,10 +25,6 @@ class SoccerRefereesBrasileiroSerieA_CBF {
 
     await page.goto("http://www.cbf.com.br/competicoes/brasileiro-serie-a/tabela/2017");
 
-    page.on("console", (...args) => {
-      console.log("PAGE CONSOLE: ", ...args);
-    });
-
 
     const referees = await page.evaluate(() => {
       return Array.from(document.querySelectorAll("[id^='escala']")).map((refereeTable) => {

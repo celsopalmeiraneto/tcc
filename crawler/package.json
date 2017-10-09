@@ -5,6 +5,7 @@
   "author": "Celso Neto",
   "license": "MIT",
   "dependencies": {
+    "crc32": "^0.2.2",
     "puppeteer": "^0.11.0"
   }
 }

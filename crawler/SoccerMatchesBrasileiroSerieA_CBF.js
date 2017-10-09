@@ -1,5 +1,7 @@
 "use strict";
 const puppeteer = require("puppeteer");
+const SoccerMatchCBF = require("./Model/SoccerMatchCBF.js");
+const MapperBrasileiroSerieA  = require("./MapperBrasileiroSerieA.js");
 
 class SoccerMatchesBrasileiroSerieA_CBF {
   constructor() {
@@ -18,6 +20,12 @@ class SoccerMatchesBrasileiroSerieA_CBF {
     });
   }
 
+  convertCrawlerToClass(singleObject){
+    var soccerMatch = new SoccerMatchCBF();
+    soccerMatch.HomeTeamId = MapperBrasileiroSerieA.teamMapper(singleObject.homeTeam);
+    soccerMatch.AwayTeamId = MapperBrasileiroSerieA.teamMapper(singleObject.awayTeam);
+  }
+
 
   async readMatchesFromWebSite(){
     const browser = await puppeteer.launch();
@@ -28,7 +36,6 @@ class SoccerMatchesBrasileiroSerieA_CBF {
     page.on("console", (...args) => {
       console.log("PAGE CONSOLE: ", ...args);
     });
-
 
     const roundsAndResults = await page.evaluate(() => {
 

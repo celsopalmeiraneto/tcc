@@ -1,8 +1,9 @@
 "use strict";
 
+const crc32 = require("crc32");
+
 class SoccerMatch {
   constructor() {
-    super();
 
     this.id = null;
 
@@ -16,6 +17,10 @@ class SoccerMatch {
     this.AwayTeamScore = 0;
 
     this.ChampionshipId = null;
+  }
+
+  getCRC32(){
+    return crc32(JSON.stringify(this));
   }
 }
 
