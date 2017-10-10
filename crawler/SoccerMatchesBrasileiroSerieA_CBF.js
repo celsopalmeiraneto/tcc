@@ -2,6 +2,7 @@
 const puppeteer = require("puppeteer");
 const SoccerMatchCBF = require("./Model/SoccerMatchCBF.js");
 const MapperBrasileiroSerieA  = require("./MapperBrasileiroSerieA.js");
+const moment = require("moment");
 
 class SoccerMatchesBrasileiroSerieA_CBF {
   constructor() {
@@ -24,6 +25,10 @@ class SoccerMatchesBrasileiroSerieA_CBF {
     var soccerMatch = new SoccerMatchCBF();
     soccerMatch.HomeTeamId = MapperBrasileiroSerieA.teamMapper(singleObject.homeTeam);
     soccerMatch.AwayTeamId = MapperBrasileiroSerieA.teamMapper(singleObject.awayTeam);
+
+    let startDateTime = soccerMatch.date.split(",").pop().trim()+", "+soccerMatch.time;
+
+    soccerMatch.StartDateTime  = moment(startDateTime, "DD MMMM");
   }
 
 
