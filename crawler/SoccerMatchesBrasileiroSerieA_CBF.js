@@ -1,35 +1,85 @@
 "use strict";
-const puppeteer = require("puppeteer");
-const SoccerMatchCBF = require("./Model/SoccerMatchCBF.js");
+const puppeteer               = require("puppeteer");
+const SoccerMatchCBF          = require("./model/SoccerMatchCBF.js");
 const MapperBrasileiroSerieA  = require("./MapperBrasileiroSerieA.js");
-const moment = require("moment");
+const SoccerMatchCBFMapper    = require("./model/SoccerMatchCBFMapper.js");
+const Venue                   = require("./model/Venue.js");
+
+const VenueMapper = require("./model/VenueMapper.js");
+
+const util = require("./util.js");
 
 class SoccerMatchesBrasileiroSerieA_CBF {
   constructor() {
 
   }
 
-  read(){
-    return new Promise((resolve, reject) => {
-      this.readMatchesFromWebSite()
-        .then((value) => {
-          return resolve(value);
-        })
-        .catch((e)=> {
-          return reject(e);
-        });
+  async read(){
+    let matchesList = await this.readMatchesFromWebSite();
+    matchesList.forEach(async (match) => {
+      try{
+        let oSoccerMatch = await this.convertCrawlerToClass(match);
+        let matchOnDB = await SoccerMatchCBFMapper.getMatchById(oSoccerMatch._id);
+
+        if(matchOnDB){
+          if(matchOnDB.crc32 != oSoccerMatch.crc32){
+            await SoccerMatchCBFMapper.updateMatch(oSoccerMatch);
+            console.log("Match Updated");
+          }
+        }else{
+          await SoccerMatchCBFMapper.insertMatch(oSoccerMatch);
+          console.log("Match Inserted");
+        }
+      }catch(e){
+        console.log(e);
+      }
     });
   }
 
-  convertCrawlerToClass(singleObject){
+  async convertCrawlerToClass(singleObject){
     var soccerMatch = new SoccerMatchCBF();
+
+    soccerMatch._id = `matchSoccerBRM2017${singleObject.gameCode.toString().padStart(4, "0")}`;
     soccerMatch.HomeTeamId = MapperBrasileiroSerieA.teamMapper(singleObject.homeTeam);
     soccerMatch.AwayTeamId = MapperBrasileiroSerieA.teamMapper(singleObject.awayTeam);
 
-    let startDateTime = soccerMatch.date.split(",").pop().trim()+", "+soccerMatch.time;
+    soccerMatch.StartDateTime  = util.convertDateTimeCBFtoMomentDate(singleObject.date, singleObject.time);
+    soccerMatch.VenueId = await this.getVenueId(singleObject.gameLocation);
 
-    soccerMatch.StartDateTime  = moment(startDateTime, "DD MMMM");
+    soccerMatch.HomeTeamScore = singleObject.homeScore;
+    soccerMatch.AwayTeamScore = singleObject.awayScore;
+
+    soccerMatch.ChampionshipId = MapperBrasileiroSerieA.getChampionshipId();
+
+    soccerMatch.SeasonMatchNumber = singleObject.gameCode;
+    soccerMatch.Round = singleObject.roundName;
+
+    return soccerMatch;
   }
+
+  async getVenueId(venueString){
+    var venue, city, state;
+    [venue = null, city = null, state = null] = venueString.split(" - ");
+
+    if(venue == null || city == null || state == null)
+      throw new Error("Venue string is missing venue, city, or state.");
+
+    let oVenue = await VenueMapper.findVenueByNameAndCity(venue.trim(), city.trim());
+
+    if(!oVenue){
+      oVenue = new Venue();
+      oVenue.Name = venue.trim();
+      oVenue.City = city.trim();
+      oVenue.State = state.trim();
+      oVenue.Country = "Brasil";
+      oVenue.UpdateSource = "Soccer Match Crawler";
+
+      oVenue = await VenueMapper.insertVenue(oVenue);
+    }
+
+    return oVenue.id;
+  }
+
 
 
   async readMatchesFromWebSite(){
@@ -68,13 +118,13 @@ class SoccerMatchesBrasileiroSerieA_CBF {
           awayTeam : line.querySelector(".game-team-2").innerText.trim(),
           homeScore : Number.parseInt(gameScore[0]),
           awayScore : Number.parseInt(gameScore[1]),
-          gameLocation : gameLocation,
+          gameLocation : gameLocation.trim(),
           gameCode : gameCode
         };
       }
 
       let rounds = Array.from(document.querySelectorAll(".item,.tabela-jogos"));
-      return rounds.map((round) => {
+      let groupByRounds = rounds.map((round) => {
         var roundName = null;
         var date = null;
         return Array.from(round.children).reduce((acc, roundLine) => {
@@ -91,6 +141,10 @@ class SoccerMatchesBrasileiroSerieA_CBF {
           return acc;
         }, []);
       });
+      return groupByRounds.reduce((acc, v) => {
+        acc = acc.concat(v);
+        return acc;
+      }, []);
     });
 
     await page.close();

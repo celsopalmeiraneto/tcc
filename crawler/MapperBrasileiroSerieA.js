@@ -3,6 +3,10 @@ class MapperBrasileiroSerieA {
   constructor() {
   }
 
+  static getChampionshipId(){
+    return "champCampeonatoBRSerieA2017";
+  }
+
   static ourIdtoCBFId(id){
     switch (id) {
     case "teamAtleticoGO":
@@ -51,45 +55,45 @@ class MapperBrasileiroSerieA {
 
   static teamMapper(cbfID){
     switch (cbfID) {
-    case "Grêmio":
+    case "Grêmio - RS":
       return "teamGremio";
-    case "Corinthians":
+    case "Corinthians - SP":
       return "teamCorinthians";
-    case "Santos":
+    case "Santos - SP":
       return "teamSantos";
-    case "Palmeiras":
+    case "Palmeiras - SP":
       return "teamPalmeiras";
-    case "Flamengo":
+    case "Flamengo - RJ":
       return "teamFlamengo";
-    case "Cruzeiro":
+    case "Cruzeiro - MG":
       return "teamCruzeiro";
-    case "Botafogo":
+    case "Botafogo - RJ":
       return "teamBotafogo";
-    case "Atlético-PR":
+    case "Atlético - PR":
       return "teamAtleticoPR";
-    case "Atlético-MG":
+    case "Atlético - MG":
       return "teamAtleticoMG";
-    case "Fluminense":
+    case "Fluminense - RJ":
       return "teamFluminense";
-    case "Sport":
+    case "Sport - PE":
       return "teamSport";
-    case "Vasco":
+    case "Vasco - RJ":
       return "teamVasco";
-    case "Ponte Preta":
+    case "Ponte Preta - SP":
       return "teamPontePreta";
-    case "Bahia":
+    case "Bahia - BA":
       return "teamBahia";
-    case "Coritiba":
+    case "Coritiba - PR":
       return "teamCoritiba";
-    case "Vitória":
+    case "Vitória - BA":
       return "teamVitoria";
-    case "Chapecoense":
+    case "Chapecoense - SC":
       return "teamChapecoense";
-    case "Avaí":
+    case "Avaí - SC":
       return "teamAvai";
-    case "Atlético-GO":
+    case "Atlético - GO":
       return "teamAtleticoGO";
-    case "São Paulo":
+    case "São Paulo - SP":
       return "teamSaoPaulo";
     }
   }

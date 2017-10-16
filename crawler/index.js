@@ -3,6 +3,8 @@ const SoccerStandingsBrasileiroSerieA = require("./SoccerStandingsBrasileiroSeri
 const SoccerMatchesBrasileiroSerieA_CBF = require("./SoccerMatchesBrasileiroSerieA_CBF");
 const SoccerMatchLineUpBrasileiroSerieA_CBF = require("./SoccerMatchLineUpBrasileiroSerieA_CBF");
 const SoccerRefereesBrasileiroSerieA_CBF = require("./SoccerRefereesBrasileiroSerieA_CBF");
+const IBGECities = require("./IBGECities.js");
+
 
 
 // let brSerieAMatches = new SoccerRefereesBrasileiroSerieA_CBF();
@@ -18,19 +20,15 @@ const SoccerRefereesBrasileiroSerieA_CBF = require("./SoccerRefereesBrasileiroSe
 
 let brSerieAMatches = new SoccerMatchesBrasileiroSerieA_CBF();
 brSerieAMatches.read()
+  .catch((e) => {
+    console.log("Error: "+e);
+  });
+
+let lineUp = new SoccerMatchLineUpBrasileiroSerieA_CBF(207, 20013);
+lineUp.read()
 .then((val) => {
   console.log("Res: " +JSON.stringify(val));
 })
 .catch((e) => {
   console.log("Error: "+e);
 });
-
-//
-// let lineUp = new SoccerMatchLineUpBrasileiroSerieA_CBF(207, 20013);
-// lineUp.read()
-// .then((val) => {
-//   console.log("Res: " +JSON.stringify(val));
-// })
-// .catch((e) => {
-//   console.log("Error: "+e);
-// });
