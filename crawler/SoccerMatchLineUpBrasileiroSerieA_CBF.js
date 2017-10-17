@@ -7,18 +7,10 @@ class SoccerMatchLineUpBrasileiroSerieA_CBF {
     this.team  = team;
   }
 
-  read(){
-    return new Promise((resolve, reject) => {
-      this.readLineupFromWebSite()
-      .then((value) => {
-        return resolve(value);
-      })
-      .catch((e)=> {
-        return reject(e);
-      });
-    });
+  async read(){
+    var lineUpList = await this.readLineupFromWebSite();
+    return lineUpList;
   }
-
 
   async readLineupFromWebSite(){
     const browser = await puppeteer.launch();
@@ -34,25 +26,25 @@ class SoccerMatchLineUpBrasileiroSerieA_CBF {
 
     const lineUp = await page.evaluate(() => {
       return Array.from(document.querySelectorAll(".dados tr:not(.tabhead)"))
-      .reduce((acc, tableLine) => {
-        tableLine = Array.from(tableLine.children);
-        acc = acc.concat({
-          shirtNumber : tableLine[0].innerText,
-          nickname : tableLine[1].innerText,
-          name : tableLine[2].innerText,
-          starter : true
-        });
-
-        if(tableLine[4].innerText != ""){
+        .reduce((acc, tableLine) => {
+          tableLine = Array.from(tableLine.children);
           acc = acc.concat({
-            shirtNumber : tableLine[3].innerText,
-            nickname : tableLine[4].innerText,
-            name : tableLine[5].innerText,
-            starter : false
+            shirtNumber : tableLine[0].innerText,
+            nickname : tableLine[1].innerText,
+            name : tableLine[2].innerText,
+            starter : true
           });
-        }
-        return acc;
-      }, []);
+
+          if(tableLine[4].innerText != ""){
+            acc = acc.concat({
+              shirtNumber : tableLine[3].innerText,
+              nickname : tableLine[4].innerText,
+              name : tableLine[5].innerText,
+              starter : false
+            });
+          }
+          return acc;
+        }, []);
     });
 
     await page.close();

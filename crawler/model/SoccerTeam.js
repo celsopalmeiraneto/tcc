@@ -13,3 +13,5 @@ class SoccerTeam {
     this.Rivalries = [];
   }
 }
+
+module.exports = SoccerTeam;

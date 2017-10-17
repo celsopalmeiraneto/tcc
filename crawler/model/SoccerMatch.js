@@ -6,7 +6,7 @@ class SoccerMatch {
   constructor() {
 
     this._id  = null;
-    this.type = "SoccerMatch";
+    this.type = "MatchSoccer";
 
     this.HomeTeamId = null;
     this.AwayTeamId = null;
