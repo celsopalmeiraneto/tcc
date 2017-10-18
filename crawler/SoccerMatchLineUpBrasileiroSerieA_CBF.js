@@ -20,9 +20,6 @@ class SoccerMatchLineUpBrasileiroSerieA_CBF {
 
     await page.goto(url);
 
-    page.on('console', (...args) => {
-      console.log("PAGE CONSOLE: ", ...args);
-    });
 
     const lineUp = await page.evaluate(() => {
       return Array.from(document.querySelectorAll(".dados tr:not(.tabhead)"))

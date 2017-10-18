@@ -1,61 +1,32 @@
 "use strict";
-const DBConnector = require("./DBConnector.js");
 const SoccerMatchCBF = require("./SoccerMatchCBF.js");
 const moment = require("moment");
 
-const db = DBConnector.getPouchDBConnection();
+const AbstractMapper = require("./AbstractMapper.js");
 
 
-exports.getMatchById = async function (id) {
-  let doc;
-  try{
-    doc = await db.get(id);
-  }catch(e){
-    return null;
-  }
+const dateFields = [
+  "LastUpdate",
+  "StartDateTime"
+];
 
-  if(doc){
-    return exports.mapDBAnswerToClassObject(doc);
-  }
-  return null;
+
+exports.getMatchById = async function(id) {
+  return await AbstractMapper.getById(id, exports.mapDBAnswerToClassObject);
 };
 
 exports.updateMatch = async function(oMatch){
-  oMatch.LastUpdate = new Date().toISOString();
-  oMatch.StartDateTime = oMatch.StartDateTime.toISOString();
+  oMatch.LastUpdate = new Date();
   oMatch.UpdateSource  = "Soccer Match Crawler";
 
-  if(!oMatch.hasOwnProperty("_rev") || oMatch.hasOwnProperty("_rev") && !oMatch._rev){
-    let tempMatch = await exports.getMatchById(oMatch._id);
-    oMatch._rev = tempMatch._rev;
-    tempMatch = null;
-  }
-
-  var response = await db.put(oMatch);
-  if(response.ok){
-    oMatch._rev = response.rev;
-    oMatch.LastUpdate = moment(oMatch.LastUpdate);
-    oMatch.StartDateTime = moment(oMatch.StartDateTime);
-    return oMatch;
-  }else{
-    throw new Error("Failed to update match."+JSON.stringify(response));
-  }
+  return await AbstractMapper.update(oMatch, dateFields);
 };
 
 exports.insertMatch = async function(oMatch){
-  oMatch.LastUpdate = new Date().toISOString();
-  oMatch.StartDateTime = oMatch.StartDateTime.toISOString();
+  oMatch.LastUpdate = new Date();
   oMatch.UpdateSource  = "Soccer Match Crawler";
 
-  let res = await db.put(oMatch);
-
-  if(res.ok){
-    oMatch.LastUpdate = moment(oMatch.LastUpdate);
-    oMatch.StartDateTime = moment(oMatch.StartDateTime);
-    return oMatch;
-  }else{
-    throw new Error("Error inserting new Match. Server response: " + JSON.stringify(res));
-  }
+  return await AbstractMapper.insert(oMatch, dateFields);
 };
 
 exports.compareMatchByIdCRC32 = async function(oMatch){

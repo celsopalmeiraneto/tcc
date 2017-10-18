@@ -10,14 +10,14 @@ class Person {
     this.Fullname = "";
     this.Nickname = "";
 
-    this.Team = null;
+    this.DateOfBirth = null;
 
     this.LastUpdate = null;
     this.UpdateSource = null;
   }
 
   get crc32(){
-    return crc32(""+this.Name+this.Nickname);
+    return crc32(""+this.Name+this.Nickname+this.DateOfBirth);
   }
 }
 
