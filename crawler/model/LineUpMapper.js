@@ -1,7 +1,7 @@
 "use strict";
 
-const LineUp = require("./LineUp.js");
 const AbstractMapper = require("./AbstractMapper.js");
+const LineUp = require("./LineUp.js");
 const moment = require("moment");
 
 

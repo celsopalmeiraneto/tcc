@@ -3,6 +3,8 @@ const puppeteer               = require("puppeteer");
 const SoccerMatchCBF          = require("./model/SoccerMatchCBF.js");
 const MapperBrasileiroSerieA  = require("./MapperBrasileiroSerieA.js");
 const SoccerMatchCBFMapper    = require("./model/SoccerMatchCBFMapper.js");
+const SoccerMatchLineUpBrasileiroSerieA_CBF = require("./SoccerMatchLineUpBrasileiroSerieA_CBF.js");
+
 const Venue                   = require("./model/Venue.js");
 
 const VenueMapper = require("./model/VenueMapper.js");
@@ -23,13 +25,17 @@ class SoccerMatchesBrasileiroSerieA_CBF {
 
         if(matchOnDB){
           if(matchOnDB.crc32 != oSoccerMatch.crc32){
-            await SoccerMatchCBFMapper.updateMatch(oSoccerMatch);
+            oSoccerMatch = await SoccerMatchCBFMapper.updateMatch(oSoccerMatch);
             console.log("Match Updated");
           }
         }else{
-          await SoccerMatchCBFMapper.insertMatch(oSoccerMatch);
+          oSoccerMatch = await SoccerMatchCBFMapper.insertMatch(oSoccerMatch);
           console.log("Match Inserted");
         }
+
+        await (new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.HomeTeamId)).read();
+        await (new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.AwayTeamId)).read();
+
       }catch(e){
         console.log(e);
       }

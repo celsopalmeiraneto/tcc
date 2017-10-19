@@ -1,22 +1,62 @@
 "use strict";
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
+const Person        = require("./model/Person.js");
+const PersonMapper  = require("./model/PersonMapper.js");
+const LineUp        = require("./model/LineUp.js");
+const LineUpMapper  = require("./model/LineUpMapper.js");
+const MapperBrasileiroSerieA = require("./MapperBrasileiroSerieA.js");
+
 
 class SoccerMatchLineUpBrasileiroSerieA_CBF {
-  constructor(match, team) {
-    this.match = match;
-    this.team  = team;
+  constructor(match, teamId) {
+    this.Match = match;
+    this.TeamId  = teamId;
   }
 
   async read(){
-    var lineUpList = await this.readLineupFromWebSite();
-    return lineUpList;
+    let lineUpList = await this.readLineupFromWebSite();
+    let oLineUp = await this.prepareLineUpObject(lineUpList);
+    return await this.insertOrUpdateLineUp(oLineUp);
+  }
+
+  async prepareLineUpObject(lineUpList){
+    var lineUp = new LineUp();
+    lineUp.MatchId  = this.Match._id;
+    lineUp.TeamId   = this.TeamId;
+    lineUp._id      = `lineUp${lineUp.TeamId}${lineUp.MatchId}${this.Match.StartDateTime.toISOString()}`;
+    lineUpList.forEach(async (person) => {
+      let foundPerson = await PersonMapper.getPersonByFullName(person.name);
+      if(!foundPerson){
+        foundPerson = new Person();
+        foundPerson.Fullname = person.name;
+        foundPerson.Nickname = person.nickname;
+        foundPerson = PersonMapper.insertPerson(foundPerson);
+      }
+      lineUp.LineUpComposition.push({
+        PersonId : foundPerson._id,
+        ShirtNumber : person.shirtNumber,
+        Starter : person.starter
+      });
+    });
+    return lineUp;
+  }
+
+  async insertOrUpdateLineUp(oLineUp){
+    let oRes = await LineUpMapper.getLineUpById(oLineUp._id);
+
+    if(oRes){
+      oLineUp._rev = oRes._rev;
+      return await LineUpMapper.updateLineUp(oLineUp);
+    }else{
+      return await LineUpMapper.insertLineUp(oLineUp);
+    }
   }
 
   async readLineupFromWebSite(){
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    const url = 'http://www.cbf.com.br/api/lineup?cam=42&cat=1&jog='+this.match+'&ano=2017&clube='+this.team;
+    const url = "http://www.cbf.com.br/api/lineup?cam=42&cat=1&jog="+this.Match.SeasonMatchNumber+"&ano=2017&clube="+MapperBrasileiroSerieA.ourIdtoCBFId(this.TeamId);
 
     await page.goto(url);
 

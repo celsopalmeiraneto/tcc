@@ -23,12 +23,3 @@ brSerieAMatches.read()
   .catch((e) => {
     console.log("Error: "+e);
   });
-
-let lineUp = new SoccerMatchLineUpBrasileiroSerieA_CBF(207, 20013);
-lineUp.read()
-.then((val) => {
-  console.log("Res: " +JSON.stringify(val));
-})
-.catch((e) => {
-  console.log("Error: "+e);
-});

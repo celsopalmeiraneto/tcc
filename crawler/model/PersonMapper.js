@@ -1,13 +1,17 @@
 "use strict";
 
 const DBConnector = require("./DBConnector.js");
+const AbstractMapper = require("./AbstractMapper.js");
 const Person      = require("./Person.js");
 const moment      = require("moment");
+const util        = require("../util.js");
 
 const db = DBConnector.getPouchDBConnection();
 
+const dateFields = ["LastUpdate", "DateOfBirth"];
+
 exports.getPersonByFullName = async function (Fullname){
-  var res = await db.query("VenueDocs/venueByNameCity", {
+  var res = await db.query("PersonDocs/personByFullname", {
     key : Fullname
   });
   if(res.rows.length > 0){
@@ -17,51 +21,24 @@ exports.getPersonByFullName = async function (Fullname){
 };
 
 exports.getPersonById = async function(sPersonId){
-  let person = null;
-  try {
-    person = await db.get(sPersonId);
-    person = exports.mapDBAnswerToClassObject(person);
-  } catch (e) {
-    //empty block on purpose!!!
-  }
-  return person;
+  return await AbstractMapper.getById(sPersonId, exports.mapDBAnswerToClassObject);
 };
 
 exports.insertPerson = async function(oPerson){
-  oPerson.LastUpdate = new Date().toISOString();
-  oPerson.DateOfBirth = oPerson.DateOfBirth.toISOString();
+  if(!oPerson._id){
+    oPerson._id = "person"+util.removeSpacesFromStrings(oPerson.Fullname);
+  }
+  oPerson.LastUpdate = new Date();
   oPerson.UpdateSource = "Person Crawler";
 
-  let res = await db.put(oPerson);
-  if(res.ok){
-    oPerson.LastUpdate = moment(oPerson.LastUpdate);
-    oPerson.DateOfBirth = moment(oPerson.DateOfBirth);
-    return oPerson;
-  }else{
-    throw res;
-  }
+  return await AbstractMapper.insert(oPerson, dateFields);
 };
 
 exports.updatePerson = async function(oPerson){
-  oPerson.LastUpdate = new Date().toISOString();
-  oPerson.DateOfBirth = oPerson.DateOfBirth.toISOString();
+  oPerson.LastUpdate = new Date();
   oPerson.UpdateSource = "Person Crawler";
 
-
-  if(!oPerson.hasOwnProperty("_rev") || oPerson.hasOwnProperty("_rev") && !oPerson._rev){
-    let tempPerson = await exports.getPersonById(oPerson._id);
-    oPerson._rev = tempPerson._rev;
-    tempPerson = null;
-  }
-
-  let res = await db.put(oPerson);
-  if(res.ok){
-    oPerson.LastUpdate = moment(oPerson.LastUpdate);
-    oPerson.DateOfBirth = moment(oPerson.DateOfBirth);
-    return oPerson;
-  }else{
-    throw res;
-  }
+  return await AbstractMapper.update(oPerson, dateFields);
 };
 
 exports.mapDBAnswerToClassObject = function(answer){

@@ -15,35 +15,10 @@ exports.getPouchDBConnection = function () {
     try{
       connection = _getConnection();
     }catch(e){
-      console.log("Deu pau ao pegar uma conexão.");
+      console.log("Error connecting to the database.");
     }
   }
   return connection;
-
-  var db;
-  if(currentConnections < connectionLimit){
-    db = _getConnection();
-    currentConnections++;
-  }else{
-    var tentative = 0;
-    var tm = setInterval(() => {
-      if(currentConnections <= connectionLimit){
-        db = _getConnection();
-        currentConnections++;
-        clearInterval(tm);
-        return void(0);
-      }else{
-        tentative += connectionInterval;
-      }
-    }, connectionInterval);
-    while(db == null && tentative < connectionWaitTime){
-
-    }
-  }
-  if(!db){
-    throw new Error("Unable to get DB connection.");
-  }
-  return db;
 };
 
 exports.disposePouchDBConnection = async function(db){
