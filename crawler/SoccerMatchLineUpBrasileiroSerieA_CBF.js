@@ -14,6 +14,7 @@ class SoccerMatchLineUpBrasileiroSerieA_CBF {
   }
 
   async read(){
+    console.log("starting to read lineup");
     let lineUpList = await this.readLineupFromWebSite();
     let oLineUp = await this.prepareLineUpObject(lineUpList);
     return await this.insertOrUpdateLineUp(oLineUp);
@@ -24,7 +25,7 @@ class SoccerMatchLineUpBrasileiroSerieA_CBF {
     lineUp.MatchId  = this.Match._id;
     lineUp.TeamId   = this.TeamId;
     lineUp._id      = `lineUp${lineUp.TeamId}${lineUp.MatchId}${this.Match.StartDateTime.toISOString()}`;
-    lineUpList.forEach(async (person) => {
+    for (var person of lineUpList) {
       let foundPerson = await PersonMapper.getPersonByFullName(person.name);
       if(!foundPerson){
         foundPerson = new Person();
@@ -37,7 +38,7 @@ class SoccerMatchLineUpBrasileiroSerieA_CBF {
         ShirtNumber : person.shirtNumber,
         Starter : person.starter
       });
-    });
+    }
     return lineUp;
   }
 

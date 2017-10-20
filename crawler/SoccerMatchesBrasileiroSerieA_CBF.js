@@ -5,6 +5,8 @@ const MapperBrasileiroSerieA  = require("./MapperBrasileiroSerieA.js");
 const SoccerMatchCBFMapper    = require("./model/SoccerMatchCBFMapper.js");
 const SoccerMatchLineUpBrasileiroSerieA_CBF = require("./SoccerMatchLineUpBrasileiroSerieA_CBF.js");
 
+const moment                  = require("moment");
+
 const Venue                   = require("./model/Venue.js");
 
 const VenueMapper = require("./model/VenueMapper.js");
@@ -18,7 +20,8 @@ class SoccerMatchesBrasileiroSerieA_CBF {
 
   async read(){
     let matchesList = await this.readMatchesFromWebSite();
-    matchesList.forEach(async (match) => {
+    for (var match of matchesList) {
+      console.log("forEach" + moment().valueOf());
       try{
         let oSoccerMatch = await this.convertCrawlerToClass(match);
         let matchOnDB = await SoccerMatchCBFMapper.getMatchById(oSoccerMatch._id);
@@ -26,11 +29,12 @@ class SoccerMatchesBrasileiroSerieA_CBF {
         if(matchOnDB){
           if(matchOnDB.crc32 != oSoccerMatch.crc32){
             oSoccerMatch = await SoccerMatchCBFMapper.updateMatch(oSoccerMatch);
-            console.log("Match Updated");
+            console.log("Match Updated" + moment().valueOf());
+
           }
         }else{
           oSoccerMatch = await SoccerMatchCBFMapper.insertMatch(oSoccerMatch);
-          console.log("Match Inserted");
+          console.log("Match Inserted" + moment().valueOf());
         }
 
         await (new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.HomeTeamId)).read();
@@ -39,7 +43,7 @@ class SoccerMatchesBrasileiroSerieA_CBF {
       }catch(e){
         console.log(e);
       }
-    });
+    }
   }
 
   async convertCrawlerToClass(singleObject){
