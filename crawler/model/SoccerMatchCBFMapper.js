@@ -1,8 +1,10 @@
 "use strict";
+const DBConnector = require("./DBConnector.js");
+const AbstractMapper = require("./AbstractMapper.js");
 const SoccerMatchCBF = require("./SoccerMatchCBF.js");
 const moment = require("moment");
 
-const AbstractMapper = require("./AbstractMapper.js");
+const db = DBConnector.getPouchDBConnection();
 
 
 const dateFields = [
@@ -13,6 +15,22 @@ const dateFields = [
 
 exports.getMatchById = async function(id) {
   return await AbstractMapper.getById(id, exports.mapDBAnswerToClassObject);
+};
+
+exports.getMatchByTeamsAndRound = async function(homeTeamId, awayTeamId, round){
+  var response = await db.find({
+    selector : {
+      type : "MatchSoccer",
+      HomeTeamId: homeTeamId,
+      AwayTeamId: awayTeamId,
+      Round : round
+    }
+  });
+  if(response.docs.length > 0){
+    return exports.mapDBAnswerToClassObject(response.docs[0]);
+  }else{
+    return null;
+  }
 };
 
 exports.updateMatch = async function(oMatch){

@@ -9,6 +9,7 @@ class SoccerMatchCBF extends SoccerMatch {
     this.SeasonMatchNumber = null;
     this.Round = null;
   }
+  
 }
 
 module.exports = SoccerMatchCBF;

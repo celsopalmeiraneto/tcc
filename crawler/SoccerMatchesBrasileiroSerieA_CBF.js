@@ -1,27 +1,43 @@
 "use strict";
-const puppeteer               = require("puppeteer");
-const SoccerMatchCBF          = require("./model/SoccerMatchCBF.js");
-const MapperBrasileiroSerieA  = require("./MapperBrasileiroSerieA.js");
-const SoccerMatchCBFMapper    = require("./model/SoccerMatchCBFMapper.js");
-const SoccerMatchLineUpBrasileiroSerieA_CBF = require("./SoccerMatchLineUpBrasileiroSerieA_CBF.js");
-
-const moment                  = require("moment");
-
 const Venue                   = require("./model/Venue.js");
-
 const VenueMapper = require("./model/VenueMapper.js");
+const SoccerMatchCBF          = require("./model/SoccerMatchCBF.js");
+const SoccerMatchCBFMapper    = require("./model/SoccerMatchCBFMapper.js");
 
+const SoccerMatchLineUpBrasileiroSerieA_CBF = require("./SoccerMatchLineUpBrasileiroSerieA_CBF.js");
+const MapperBrasileiroSerieA  = require("./MapperBrasileiroSerieA.js");
+
+const puppeteer               = require("puppeteer");
+const ParallelOrchestrator    = require("./model/ParallelOrchestrator");
+const moment                  = require("moment");
 const util = require("./util.js");
+
+
 
 class SoccerMatchesBrasileiroSerieA_CBF {
   constructor() {
-
+    this._stackLineUp = [];
   }
 
   async read(){
     let matchesList = await this.readMatchesFromWebSite();
-    for (var match of matchesList) {
-      console.log("forEach" + moment().valueOf());
+    let po = new ParallelOrchestrator(matchesList, 3, _readMatches, this);
+    await po.run();
+
+
+    po = new ParallelOrchestrator(this._stackLineUp, 6, _readLineUp, this);
+    await po.run();
+
+
+    async function _readLineUp(matchLineUp){
+      try{
+        await matchLineUp.read();
+      }catch(e){
+        console.log("Failure to readline up.", e);
+      }
+    }
+
+    async function _readMatches(match){
       try{
         let oSoccerMatch = await this.convertCrawlerToClass(match);
         let matchOnDB = await SoccerMatchCBFMapper.getMatchById(oSoccerMatch._id);
@@ -31,15 +47,16 @@ class SoccerMatchesBrasileiroSerieA_CBF {
             oSoccerMatch = await SoccerMatchCBFMapper.updateMatch(oSoccerMatch);
             console.log("Match Updated" + moment().valueOf());
 
+            this._stackLineUp.push(new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.HomeTeamId));
+            this._stackLineUp.push(new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.AwayTeamId));
           }
         }else{
           oSoccerMatch = await SoccerMatchCBFMapper.insertMatch(oSoccerMatch);
           console.log("Match Inserted" + moment().valueOf());
+
+          this._stackLineUp.push(new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.HomeTeamId));
+          this._stackLineUp.push(new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.AwayTeamId));
         }
-
-        await (new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.HomeTeamId)).read();
-        await (new SoccerMatchLineUpBrasileiroSerieA_CBF(oSoccerMatch, oSoccerMatch.AwayTeamId)).read();
-
       }catch(e){
         console.log(e);
       }
@@ -49,9 +66,14 @@ class SoccerMatchesBrasileiroSerieA_CBF {
   async convertCrawlerToClass(singleObject){
     var soccerMatch = new SoccerMatchCBF();
 
+
     soccerMatch._id = `matchSoccerBRM2017${singleObject.gameCode.toString().padStart(4, "0")}`;
     soccerMatch.HomeTeamId = MapperBrasileiroSerieA.teamMapper(singleObject.homeTeam);
     soccerMatch.AwayTeamId = MapperBrasileiroSerieA.teamMapper(singleObject.awayTeam);
+
+    if(!soccerMatch.HomeTeamId || !soccerMatch.AwayTeamId)
+      throw new Error("TeamId is invalid." + JSON.stringify(singleObject));
+
 
     soccerMatch.StartDateTime  = util.convertDateTimeCBFtoMomentDate(singleObject.date, singleObject.time);
     soccerMatch.VenueId = await this.getVenueId(singleObject.gameLocation);

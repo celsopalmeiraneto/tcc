@@ -7,6 +7,51 @@ class MapperBrasileiroSerieA {
     return "champCampeonatoBRSerieA2017";
   }
 
+  static globoEsporteAcronymToOur(ge){
+    switch (ge.toUpperCase()) {
+    case "ACG":
+      return "teamAtleticoGO";
+    case "AVA":
+      return "teamAvai";
+    case "BAH":
+      return "teamBahia";
+    case "BOT":
+      return "teamBotafogo";
+    case "CAM":
+      return "teamAtleticoMG";
+    case "CAP":
+      return "teamAtleticoPR";
+    case "CFC":
+      return "teamCoritiba";
+    case "CHA":
+      return "teamChapecoense";
+    case "COR":
+      return "teamCorinthians";
+    case "CRU":
+      return "teamCruzeiro";
+    case "FLA":
+      return "teamFlamengo";
+    case "FLU":
+      return "teamFluminense";
+    case "GRE":
+      return "teamGremio";
+    case "PAL":
+      return "teamPalmeiras";
+    case "PON":
+      return "teamPontePreta";
+    case "SAN":
+      return "teamSantos";
+    case "SAO":
+      return "teamSaoPaulo";
+    case "SPO":
+      return "teamSport";
+    case "VAS":
+      return "teamVasco";
+    case "VIT":
+      return "teamVitoria";
+    }
+  }
+
   static ourIdtoCBFId(id){
     switch (id) {
     case "teamAtleticoGO":
@@ -54,46 +99,48 @@ class MapperBrasileiroSerieA {
 
 
   static teamMapper(cbfID){
-    switch (cbfID) {
-    case "Grêmio - RS":
+    switch (cbfID.toUpperCase()) {
+    case "GRÊMIO - RS":
       return "teamGremio";
-    case "Corinthians - SP":
+    case "CORINTHIANS - SP":
       return "teamCorinthians";
-    case "Santos - SP":
+    case "SANTOS - SP":
       return "teamSantos";
-    case "Palmeiras - SP":
+    case "PALMEIRAS - SP":
       return "teamPalmeiras";
-    case "Flamengo - RJ":
+    case "FLAMENGO - RJ":
       return "teamFlamengo";
-    case "Cruzeiro - MG":
+    case "CRUZEIRO - MG":
       return "teamCruzeiro";
-    case "Botafogo - RJ":
+    case "BOTAFOGO - RJ":
       return "teamBotafogo";
-    case "Atlético - PR":
+    case "ATLÉTICO - PR":
       return "teamAtleticoPR";
-    case "Atlético - MG":
+    case "ATLÉTICO - MG":
       return "teamAtleticoMG";
-    case "Fluminense - RJ":
+    case "FLUMINENSE - RJ":
       return "teamFluminense";
-    case "Sport - PE":
+    case "SPORT - PE":
       return "teamSport";
-    case "Vasco - RJ":
+    case "VASCO - RJ":
       return "teamVasco";
-    case "Ponte Preta - SP":
+    case "VASCO DA GAMA - RJ":
+      return "teamVasco";
+    case "PONTE PRETA - SP":
       return "teamPontePreta";
-    case "Bahia - BA":
+    case "BAHIA - BA":
       return "teamBahia";
-    case "Coritiba - PR":
+    case "CORITIBA - PR":
       return "teamCoritiba";
-    case "Vitória - BA":
+    case "VITÓRIA - BA":
       return "teamVitoria";
-    case "Chapecoense - SC":
+    case "CHAPECOENSE - SC":
       return "teamChapecoense";
-    case "Avaí - SC":
+    case "AVAÍ - SC":
       return "teamAvai";
-    case "Atlético - GO":
+    case "ATLÉTICO - GO":
       return "teamAtleticoGO";
-    case "São Paulo - SP":
+    case "SÃO PAULO - SP":
       return "teamSaoPaulo";
     }
   }

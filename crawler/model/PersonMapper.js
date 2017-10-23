@@ -15,7 +15,7 @@ exports.getPersonByFullName = async function (Fullname){
     key : Fullname
   });
   if(res.rows.length > 0){
-    return exports.mapDBAnswerToClassObject(res.rows[0]);
+    return exports.mapDBAnswerToClassObject(res.rows[0].value);
   }
   return null;
 };

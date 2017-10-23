@@ -27,7 +27,7 @@ exports.update = async function(oObj, aDateFields){
   oObj = dateFieldsToString(oObj, aDateFields);
 
   if(!oObj.hasOwnProperty("_rev") || oObj.hasOwnProperty("_rev") && !oObj._rev){
-    let tempMatch = db.get(oObj._id);
+    let tempMatch = await db.get(oObj._id);
     oObj._rev = tempMatch._rev;
     tempMatch = null;
   }

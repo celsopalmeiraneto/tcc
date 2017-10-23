@@ -35,6 +35,10 @@ class SoccerMatch {
     +this.HomeTeamId
     +this.AwayTeamId);
   }
+
+  toString(){
+    return `MatchId: ${this._id}`;
+  }
 }
 
 module.exports = SoccerMatch;
