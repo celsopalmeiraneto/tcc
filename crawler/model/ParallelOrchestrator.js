@@ -15,7 +15,7 @@ class ParallelOrchestrator {
     let initialItems = this.argumentsArray.splice(0, this.parallelExecutions);
     this._availableSeats -= initialItems.length;
 
-    await Promise.all(initialItems.map(v => {
+    return await Promise.all(initialItems.map(v => {
       return this._internalExecution(v);
     }));
   }

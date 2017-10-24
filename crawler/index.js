@@ -3,9 +3,6 @@ const SoccerMatchesBrasileiroSerieA_CBF = require("./SoccerMatchesBrasileiroSeri
 const SoccerNews_GloboEsporte = require("./SoccerNews_GloboEsporteRodadas.js");
 const IBGECities = require("./IBGECities.js");
 
-
-
-
 // let brSerieAMatches = new SoccerMatchesBrasileiroSerieA_CBF();
 // brSerieAMatches.read()
 //   .catch((e) => {
@@ -14,24 +11,9 @@ const IBGECities = require("./IBGECities.js");
 //
 
 let brNews = new SoccerNews_GloboEsporte();
-brNews.readByRounds([1,2,3,4,5,6,7,8,9,10])
+brNews.readByRounds([1])
   .then((v) => {
-    var t = v.reduce((acc, v) => {
-      acc = acc.concat(v);
-      return acc;
-    }, [])
-      .reduce((acc, v) => {
-        if(!acc.includes(v.homeTeam))
-          acc.push(v.homeTeam);
-
-        if(!acc.includes(v.awayTeam))
-          acc.push(v.awayTeam);
-
-        return acc;
-      }, []);
-
-    console.log(t.sort());
-
+    console.log(v);
   })
   .catch((e) => {
     console.log(e);

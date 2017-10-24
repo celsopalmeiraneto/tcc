@@ -2,23 +2,76 @@
 const puppeteer = require("puppeteer");
 
 const SoccerMatchCBFMapper = require("./model/SoccerMatchCBFMapper.js");
+const ParallelOrchestrator = require("./model/ParallelOrchestrator.js");
+const MapperBrasileiroSerieA = require("./MapperBrasileiroSerieA.js");
 
 class SoccerNews_GloboEsporte{
   constructor(){
   }
 
   async readByRounds(rounds){
-    try {
-      var res = await Promise.all(rounds.map((round) => this.readGamesAndLinks(round)));
+    let aRounds  = await Promise.all(rounds.map((round) => this.readGamesAndLinks(round)));
+    let aMatches = await this.getMatchesAndUrls(aRounds);
+    let aMatchesAndSummaries = await this.readMatchesSummaries(aMatches);
+    
+    return aMatchesAndSummaries;
+  }
 
-    } catch (e) {
-      console.log(e);
-    }
-    return res;
+  async getMatchesAndUrls(aRounds){
+    return await Promise.all(this.flattenArray(aRounds).map(async (v)=>{
+      let res = await this.findCorrespondingMatch(v);
+      if(!res)
+        throw v;
+      res.url = v.url;
+      return res;
+    }));
   }
 
   async findCorrespondingMatch(geObj){
+    geObj.homeTeam = MapperBrasileiroSerieA.globoEsporteAcronymToOur(geObj.homeTeam);
+    geObj.awayTeam = MapperBrasileiroSerieA.globoEsporteAcronymToOur(geObj.awayTeam);
     return await SoccerMatchCBFMapper.getMatchByTeamsAndRound(geObj.homeTeam, geObj.awayTeam, `Rodada ${geObj.round}`);
+  }
+
+  flattenArray(arrayOfArrays){
+    return arrayOfArrays.reduce((acc, v)=>{
+      acc = acc.concat(v);
+      return acc;
+    }, []);
+  }
+
+  async readMatchesSummaries(matches){
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    var res = [];
+
+    for (var match of matches) {
+      try {
+        await page.goto(match.url);
+        res.push(page.evaluate((match)=>{
+          let summary = document.querySelector(".pos-lance-a-lance .descricao-lance p");
+          if(!summary)
+            throw new Error("Summary not found");
+
+          match.summary = summary.innerText;
+
+          let img = document.querySelector(".pos-lance-a-lance img.thumb-midia");
+          if(img){
+            match.img = {
+              title : img.title,
+              src : img.src
+            };
+          }
+          return match;
+        }, match));
+      } catch (e) {
+        throw "Erro: "+JSON.stringify(e);
+      }
+    }
+    await page.close();
+    await browser.close();
+
+    return res;
   }
 
   async readGamesAndLinks(round){
