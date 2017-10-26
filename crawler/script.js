@@ -6,6 +6,19 @@ var db = DBConnector.getPouchDBConnection();
 
 db.find({
   selector: {
+    type : "SoccerMatch"
+  },
+  limit : 500
+})
+  .then((v) => {
+    v.docs.forEach((v) => {
+      console.log(v);
+    });
+  });
+
+/*
+db.find({
+  selector: {
     _id : { $regex : "(matchSoccer)"}
   },
   limit : 500
@@ -20,7 +33,7 @@ db.find({
   });
 
 /*
-
+*/
 db.query("VenueDocs/venueByNameCity")
   .then((v) => {
     v.rows.forEach((value) => {

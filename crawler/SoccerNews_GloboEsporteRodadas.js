@@ -1,8 +1,11 @@
 "use strict";
 const puppeteer = require("puppeteer");
+const fs = require("fs");
+const request = require("request");
 
 const SoccerMatchCBFMapper = require("./model/SoccerMatchCBFMapper.js");
-const ParallelOrchestrator = require("./model/ParallelOrchestrator.js");
+const News = require("./model/News.js");
+const NewsMapper = require("./model/NewsMapper.js");
 const MapperBrasileiroSerieA = require("./MapperBrasileiroSerieA.js");
 
 class SoccerNews_GloboEsporte{
@@ -10,15 +13,57 @@ class SoccerNews_GloboEsporte{
   }
 
   async readByRounds(rounds){
-    let aRounds  = await Promise.all(rounds.map((round) => this.readGamesAndLinks(round)));
-    let aMatches = await this.getMatchesAndUrls(aRounds);
-    let aMatchesAndSummaries = await this.readMatchesSummaries(aMatches);
-    
-    return aMatchesAndSummaries;
+    let aGEMatches = await Promise.all(rounds.map((round) => this.readMatchesAndLinks(round)));
+    let aMatches = await this.getOurMatches(aGEMatches);
+    let aMatchesAndSummaries = await this.readSummaries(aMatches);
+
+    let aNews = await this.insertOrUpdateNews(aMatchesAndSummaries);
+    //await this.downloadNewsPhotos(aMatchesAndSummaries);
+
+    return aNews;
   }
 
-  async getMatchesAndUrls(aRounds){
-    return await Promise.all(this.flattenArray(aRounds).map(async (v)=>{
+  async downloadNewsPhotos(aMatchesAndSummaries){
+    for (var news of aMatchesAndSummaries){
+      if(news.hasOwnProperty("img")){
+        request(news.img.src).pipe(fs.createWriteStream("./images/img"+Math.random().toString().replace(".","")+".png"));
+      }
+    }
+  }
+
+  async insertOrUpdateNews(aMatchesAndSummaries){
+    let lotsOfNews = this.convertToNews(aMatchesAndSummaries);
+    for (var oneNews of lotsOfNews) {
+      if(!oneNews)
+        continue;
+
+      let onDBNews = await NewsMapper.getById(oneNews._id);
+
+      if(onDBNews){
+        if(onDBNews.crc32 != oneNews.crc32){
+          oneNews = await NewsMapper.updateNews(oneNews);
+        }
+      }else{
+        oneNews = await NewsMapper.insertNews(oneNews);
+      }
+
+    }
+    return lotsOfNews;
+  }
+
+  convertToNews(aMatchesAndSummaries){
+    return aMatchesAndSummaries.map((v)=>{
+      let news = new News();
+      news._id = `newsGloboEsporte${v._id}`;
+      news.About.push(v._id, v.HomeTeamId, v.AwayTeamId, v.ChampionshipId);
+      news.Text  = v.summary;
+      news.Url   = v.url;
+      return news;
+    });
+  }
+
+  async getOurMatches(aGEMatches){
+    return await Promise.all(this.flattenArray(aGEMatches).map(async (v)=>{
       let res = await this.findCorrespondingMatch(v);
       if(!res)
         throw v;
@@ -40,7 +85,7 @@ class SoccerNews_GloboEsporte{
     }, []);
   }
 
-  async readMatchesSummaries(matches){
+  async readSummaries(matches){
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     var res = [];
@@ -48,7 +93,7 @@ class SoccerNews_GloboEsporte{
     for (var match of matches) {
       try {
         await page.goto(match.url);
-        res.push(page.evaluate((match)=>{
+        res.push(await page.evaluate((match)=>{
           let summary = document.querySelector(".pos-lance-a-lance .descricao-lance p");
           if(!summary)
             throw new Error("Summary not found");
@@ -65,6 +110,8 @@ class SoccerNews_GloboEsporte{
           return match;
         }, match));
       } catch (e) {
+        await page.close();
+        await browser.close();
         throw "Erro: "+JSON.stringify(e);
       }
     }
@@ -74,7 +121,7 @@ class SoccerNews_GloboEsporte{
     return res;
   }
 
-  async readGamesAndLinks(round){
+  async readMatchesAndLinks(round){
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
