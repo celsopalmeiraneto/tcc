@@ -13,27 +13,39 @@ class SoccerNews_GloboEsporte{
   }
 
   async readByRounds(rounds){
-    let aGEMatches = await Promise.all(rounds.map((round) => this.readMatchesAndLinks(round)));
-    let aMatches = await this.getOurMatches(aGEMatches);
-    let aMatchesAndSummaries = await this.readSummaries(aMatches);
+    let aGEMatches = [];
+    for (var round of rounds) {
+      let ml = await this.readMatchesAndLinks(round);
+      aGEMatches.push(ml);
 
-    let aNews = await this.insertOrUpdateNews(aMatchesAndSummaries);
-    //await this.downloadNewsPhotos(aMatchesAndSummaries);
-
-    return aNews;
+      let aMatches = await this.getOurMatches(ml);
+      let aMatchesAndSummaries = await this.readSummaries(aMatches);
+      let aNews = await this.insertOrUpdateNews(aMatchesAndSummaries);
+      await this.downloadNewsPhotos(aMatchesAndSummaries);
+    }
+    //return aNews;
   }
 
   async downloadNewsPhotos(aMatchesAndSummaries){
     for (var news of aMatchesAndSummaries){
       if(news.hasOwnProperty("img")){
-        request(news.img.src).pipe(fs.createWriteStream("./images/img"+Math.random().toString().replace(".","")+".png"));
+        try{
+          await request(news.img.src).pipe(fs.createWriteStream("./images/img"+news._id+"."+news.img.src.split(".").pop()));
+        }catch(e){
+          console.log(e);
+        }
       }
     }
   }
 
   async insertOrUpdateNews(aMatchesAndSummaries){
-    let lotsOfNews = this.convertToNews(aMatchesAndSummaries);
-    for (var oneNews of lotsOfNews) {
+    let lotsOfNews = [];
+    for (var matchAndSummary of aMatchesAndSummaries) {
+      if(!matchAndSummary)
+        continue;
+
+      var oneNews = this.convertToNews(matchAndSummary);
+
       if(!oneNews)
         continue;
 
@@ -46,30 +58,30 @@ class SoccerNews_GloboEsporte{
       }else{
         oneNews = await NewsMapper.insertNews(oneNews);
       }
-
+      lotsOfNews.push(oneNews);
     }
     return lotsOfNews;
   }
 
-  convertToNews(aMatchesAndSummaries){
-    return aMatchesAndSummaries.map((v)=>{
-      let news = new News();
-      news._id = `newsGloboEsporte${v._id}`;
-      news.About.push(v._id, v.HomeTeamId, v.AwayTeamId, v.ChampionshipId);
-      news.Text  = v.summary;
-      news.Url   = v.url;
-      return news;
-    });
+  convertToNews(matchAndSummary){
+    let news = new News();
+    news._id = `newsGloboEsporte${matchAndSummary._id}`;
+    news.About.push(matchAndSummary._id, matchAndSummary.HomeTeamId, matchAndSummary.AwayTeamId, matchAndSummary.ChampionshipId);
+    news.Text  = matchAndSummary.summary;
+    news.Url   = matchAndSummary.url;
+    return news;
   }
 
   async getOurMatches(aGEMatches){
-    return await Promise.all(this.flattenArray(aGEMatches).map(async (v)=>{
+    var ourMatches = [];
+    for (var v of aGEMatches) {
       let res = await this.findCorrespondingMatch(v);
       if(!res)
-        throw v;
+        continue;
       res.url = v.url;
-      return res;
-    }));
+      ourMatches.push(res);
+    }
+    return ourMatches;
   }
 
   async findCorrespondingMatch(geObj){
@@ -91,6 +103,8 @@ class SoccerNews_GloboEsporte{
     var res = [];
 
     for (var match of matches) {
+      if(!match.url)
+        continue;
       try {
         await page.goto(match.url);
         res.push(await page.evaluate((match)=>{
@@ -104,15 +118,13 @@ class SoccerNews_GloboEsporte{
           if(img){
             match.img = {
               title : img.title,
-              src : img.src
+              src : img.src.substr(0,4) != "data" ? img.src : img.dataset.src
             };
           }
           return match;
         }, match));
       } catch (e) {
-        await page.close();
-        await browser.close();
-        throw "Erro: "+JSON.stringify(e);
+        console.log(e);
       }
     }
     await page.close();
@@ -137,7 +149,9 @@ class SoccerNews_GloboEsporte{
 
           matchData.homeTeam = match.querySelector(".placar-jogo-equipes-mandante .placar-jogo-equipes-sigla").innerText.trim();
           matchData.awayTeam = match.querySelector(".placar-jogo-equipes-visitante .placar-jogo-equipes-sigla").innerText.trim();
-          matchData.url      = match.querySelector("a.placar-jogo-link.placar-jogo-link-confronto-js").href;
+          matchData.url      = match.querySelector("a.placar-jogo-link.placar-jogo-link-confronto-js");
+          if(matchData.url)
+            matchData.url = matchData.url.href;
           matchData.round    = round;
 
           return matchData;

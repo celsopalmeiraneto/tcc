@@ -8,3 +8,7 @@ yarn.lock
 Thumbs.db
 
 crawler/res.txt
+crawler/images/
+
+#Dev
+couchdb_data/
