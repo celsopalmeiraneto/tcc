@@ -12,6 +12,7 @@ exports.findVenueByNameAndCity = async function (name, city){
   var res;
   try{
     res = await db.query("VenueDocs/venueByNameCity", {
+      include_docs : true,
       key : [name, city],
       limit : 1
     });
@@ -20,7 +21,7 @@ exports.findVenueByNameAndCity = async function (name, city){
   }
 
   if(res.rows.length > 0){
-    return mapDBAnswerToClassObject(res.rows[0].value);
+    return mapDBAnswerToClassObject(res.rows[0].doc);
   }
   return null;
 };

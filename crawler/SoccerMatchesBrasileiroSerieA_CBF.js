@@ -108,8 +108,7 @@ class SoccerMatchesBrasileiroSerieA_CBF {
 
       oVenue = await VenueMapper.insertVenue(oVenue);
     }
-
-    return oVenue.id;
+    return oVenue._id;
   }
 
 

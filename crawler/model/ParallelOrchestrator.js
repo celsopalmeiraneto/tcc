@@ -22,6 +22,8 @@ class ParallelOrchestrator {
 
   async _internalExecution(args){
     try {
+      if(!Array.isArray(args))
+        args = [args];
       await this.func.apply(this.context, [args]);
     } catch (e) {
       console.log(e);

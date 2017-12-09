@@ -47,7 +47,8 @@ export default class HomeScreen extends Component {
                     source={{uri : `http://192.168.15.225:8080/img${v._id}.jpg`}}
                   />
                   <Text>
-                    {new Date(v.StartDateTime).toLocaleDateString()+" "+new Date(v.StartDateTime).toLocaleTimeString()}
+                    {new Date(v.StartDateTime).toLocaleDateString()+" "+new Date(v.StartDateTime).toLocaleTimeString()}{'\n'}
+                    {v.VenueId}
                   </Text>
                   <Button small title="Veja mais" onPress={() => {
                     navigate("Match");

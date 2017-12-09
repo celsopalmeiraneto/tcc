@@ -1,38 +1,47 @@
 "use strict";
-const puppeteer = require("puppeteer");
 const fs = require("fs");
+const puppeteer = require("puppeteer");
 const request = require("request");
 
-const SoccerMatchCBFMapper = require("./model/SoccerMatchCBFMapper.js");
+const MapperBrasileiroSerieA = require("./MapperBrasileiroSerieA.js");
 const News = require("./model/News.js");
 const NewsMapper = require("./model/NewsMapper.js");
-const MapperBrasileiroSerieA = require("./MapperBrasileiroSerieA.js");
+const SoccerMatchCBFMapper = require("./model/SoccerMatchCBFMapper.js");
 
 class SoccerNews_GloboEsporte{
   constructor(){
   }
 
   async readByRounds(rounds){
-    let aGEMatches = [];
     for (var round of rounds) {
-      let ml = await this.readMatchesAndLinks(round);
-      aGEMatches.push(ml);
+      console.log("Round "+round);
 
+      console.log(round+" reading matches and links");
+      let ml = await this.readMatchesAndLinks(round);
+
+      console.log(round+" getting our matches");
       let aMatches = await this.getOurMatches(ml);
+
+      console.log(round+" reading summaries");
       let aMatchesAndSummaries = await this.readSummaries(aMatches);
+
+      console.log(round+" inserting on couchdb");
       let aNews = await this.insertOrUpdateNews(aMatchesAndSummaries);
+
+      console.log(round+" downloading photos");
       await this.downloadNewsPhotos(aMatchesAndSummaries);
     }
-    //return aNews;
   }
 
   async downloadNewsPhotos(aMatchesAndSummaries){
     for (var news of aMatchesAndSummaries){
       if(news.hasOwnProperty("img")){
         try{
-          await request(news.img.src).pipe(fs.createWriteStream("./images/img"+news._id+"."+news.img.src.split(".").pop()));
+          let extension = news.img.src.split(".").pop();
+          if(["jpg", "png", "jpeg"].includes(extension.toLowerCase()))
+            await request(news.img.src).pipe(fs.createWriteStream("./images/img"+news._id+"."));
         }catch(e){
-          console.log(e);
+          console.error(e);
         }
       }
     }
@@ -74,13 +83,19 @@ class SoccerNews_GloboEsporte{
 
   async getOurMatches(aGEMatches){
     var ourMatches = [];
-    for (var v of aGEMatches) {
-      let res = await this.findCorrespondingMatch(v);
-      if(!res)
-        continue;
-      res.url = v.url;
-      ourMatches.push(res);
-    }
+
+    await Promise.all(aGEMatches.map(async (v)=>{
+      try{
+        let res = await this.findCorrespondingMatch(v);
+        if(res){
+          res.url = v.url;
+          ourMatches.push(res);
+        }
+      }catch(e){
+        console.error(e);
+      }
+    }));
+
     return ourMatches;
   }
 
@@ -99,37 +114,44 @@ class SoccerNews_GloboEsporte{
 
   async readSummaries(matches){
     const browser = await puppeteer.launch();
-    const page = await browser.newPage();
     var res = [];
 
-    for (var match of matches) {
-      if(!match.url)
-        continue;
-      try {
-        await page.goto(match.url);
-        res.push(await page.evaluate((match)=>{
-          let summary = document.querySelector(".pos-lance-a-lance .descricao-lance p");
-          if(!summary)
-            throw new Error("Summary not found");
+    var executionArray = [].concat(matches);
 
-          match.summary = summary.innerText;
+    while(executionArray.length > 0){
+      let runningNow = executionArray.splice(0, 5);
+      await Promise.all(runningNow.map(async (match)=>{
+        console.log("reading summary... Summaries left: "+executionArray.length);
+        if(!match.url)
+          return null;
+        try {
+          const page = await browser.newPage();
+          await page.goto(match.url, {
+            timeout : 180000
+          });
+          res.push(await page.evaluate((match)=>{
+            let summary = document.querySelector(".pos-lance-a-lance .descricao-lance p");
+            if(!summary)
+              throw new Error("Summary not found");
 
-          let img = document.querySelector(".pos-lance-a-lance img.thumb-midia");
-          if(img){
-            match.img = {
-              title : img.title,
-              src : img.src.substr(0,4) != "data" ? img.src : img.dataset.src
-            };
-          }
-          return match;
-        }, match));
-      } catch (e) {
-        console.log(e);
-      }
+            match.summary = summary.innerText;
+
+            let img = document.querySelector(".pos-lance-a-lance img.thumb-midia");
+            if(img){
+              match.img = {
+                title : img.title,
+                src : img.src.substr(0,4) != "data" ? img.src : img.dataset.src
+              };
+            }
+            return match;
+          }, match));
+          await page.close();
+        } catch (e) {
+          console.log(e);
+        }
+      }));
     }
-    await page.close();
     await browser.close();
-
     return res;
   }
 
