@@ -44,14 +44,14 @@ export default class HomeScreen extends Component {
                 <Card title={`${v.homeTeamName} x ${v.awayTeamName}`} key={v._id}>
                   <Image
                     style = {{width : 100, height : 100}}
-                    source={{uri : `http://192.168.15.225:8080/img${v._id}.jpg`}}
+                    source={{uri : `http://192.168.15.250:8080/img${v._id}.jpg`}}
                   />
                   <Text>
                     {new Date(v.StartDateTime).toLocaleDateString()+" "+new Date(v.StartDateTime).toLocaleTimeString()}{'\n'}
-                    {v.VenueId}
+                    {v.VenueName}
                   </Text>
                   <Button small title="Veja mais" onPress={() => {
-                    navigate("Match");
+                    navigate("Match", { matchId : v._id, matchDesc : `${v.homeTeamName} x ${v.awayTeamName}`});
                   }} />
                 </Card>
               )
