@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { Image, ScrollView, StatusBar, Text, View } from 'react-native';
 import { Button, Card, Header } from 'react-native-elements';
+import * as Util from './Util';
 
 import DataRepo from './DataRepo';
 
@@ -37,18 +38,22 @@ export default class HomeScreen extends Component {
 
     return (
       <View>
+        <StatusBar
+          hidden = {true}
+        />
         <ScrollView horizontal>
           {
             this.state.matches.map((v,k)=>{
               return (
-                <Card title={`${v.homeTeamName} x ${v.awayTeamName}`} key={v._id}>
-                  <Image
-                    style = {{width : 100, height : 100}}
-                    source={{uri : `http://192.168.15.250:8080/img${v._id}.jpg`}}
-                  />
+                <Card
+                  image={{uri : Util.getImageUrl(v._id)}}
+                  containerStyle={{
+                    width : 250
+                  }}
+                  title={`${v.homeTeamName} x ${v.awayTeamName}`} key={v._id}
+                >
                   <Text>
-                    {new Date(v.StartDateTime).toLocaleDateString()+" "+new Date(v.StartDateTime).toLocaleTimeString()}{'\n'}
-                    {v.VenueName}
+                    {`${v.venueName}, ${Util.formatDateStringToShortDateTime(v.StartDateTime)}`}{'\n'}
                   </Text>
                   <Button small title="Veja mais" onPress={() => {
                     navigate("Match", { matchId : v._id, matchDesc : `${v.homeTeamName} x ${v.awayTeamName}`});

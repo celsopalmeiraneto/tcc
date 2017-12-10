@@ -21,6 +21,11 @@ export default class App extends Component {
         </Text>
         <ScrollView horizontal>
           <Card title="Vasco x Flamengo">
+          <Image
+            style = {{width : 100, height : 100}}
+            source={{uri : Util.getImageUrl(v._id)}}
+          />
+            
             <Image
               style = {{width : 130, height : 130}}
               source={{uri : 'http://sportlink.com.br/wp-content/uploads/2017/02/futebol-society.png'}}
