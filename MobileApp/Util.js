@@ -1,5 +1,5 @@
 const couchSettings = {
-  ip : "192.168.15.225",
+  ip : "192.168.15.250",
   port : 5984,
   user : "root",
   pwd  : "root",
@@ -16,7 +16,7 @@ function getImageUrl(id){
   return `${imageServerURL}/img${id}.jpg`;
 }
 
-const imageServerURL = "http://192.168.15.225:8080";
+const imageServerURL = "http://192.168.15.250:8080";
 
 export {
   couchSettings,
