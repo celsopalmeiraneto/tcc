@@ -15,6 +15,8 @@ exports.convertDateTimeCBFtoMomentDate = function(dateString, timeString){
 };
 
 exports.removeSpacesFromStrings = function(string){
+  if(typeof string != "string")
+    throw new Error("Argument string must be a string.");
   return string.split(/[\s\uFEFF\xA0]/).reduce((acc, v) => {
     acc = (v.trim() == "" ? acc : acc+v);
     return acc;

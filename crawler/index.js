@@ -2,7 +2,8 @@
 const minimist = require("minimist");
 const SoccerMatchesBrasileiroSerieA_CBF = require("./SoccerMatchesBrasileiroSerieA_CBF");
 const SoccerNews_GloboEsporte = require("./SoccerNews_GloboEsporteRodadas.js");
-const IBGECities = require("./IBGECities.js");
+const SoccerRefereesBrasileiroSerieA_CBF = require("./SoccerRefereesBrasileiroSerieA_CBF.js");
+const SoccerStandingsBrasileiroSerieA = require("./SoccerStandingsBrasileiroSerieA.js");
 
 var args = minimist(process.argv.slice(2));
 
@@ -11,7 +12,18 @@ var args = minimist(process.argv.slice(2));
   if(args.matches && args.matches.toLowerCase() == "true"){
     let brSerieAMatches = new SoccerMatchesBrasileiroSerieA_CBF();
     try {
-      await brSerieAMatches.read();
+      console.log(await brSerieAMatches.read());
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  // --referees==true
+  if(args.referees && args.referees.toLowerCase() == "true"){
+    let referees = new SoccerRefereesBrasileiroSerieA_CBF();
+    try {
+      var res = await referees.read();
+      console.log(JSON.stringify(res));
     } catch (e) {
       console.log(e);
     }
@@ -33,6 +45,14 @@ var args = minimist(process.argv.slice(2));
       console.log(e);
     }
   }
+
+  // --standings==true
+  if(args.standings && args.standings.toLowerCase() == "true"){
+    let standings = new SoccerStandingsBrasileiroSerieA();
+    let res = await standings.read();
+    console.log(res);
+  }
+
 })(args);
 
 //--matches=true

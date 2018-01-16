@@ -11,13 +11,20 @@ const db = DBConnector.getPouchDBConnection();
 const dateFields = ["LastUpdate", "DateOfBirth"];
 
 exports.getPersonByFullName = async function (Fullname){
+  if(!Fullname)
+    throw "Invalid parameter";
   var res = await db.query("PersonDocs/personByFullname", {
     key : Fullname
   });
+  //console.log(JSON.stringify(Fullname));
   if(res.rows.length > 0){
-    return exports.mapDBAnswerToClassObject(res.rows[0].doc);
+    return await exports.getPersonById(res.rows[0].id);
   }
   return null;
+};
+
+exports.getPersonsByFullNames = async function(aPersonFullNames){
+  return await Promise.all(aPersonFullNames.map(v => exports.getPersonByFullName(v)));
 };
 
 exports.getPersonById = async function(sPersonId){
@@ -32,6 +39,10 @@ exports.insertPerson = async function(oPerson){
   oPerson.UpdateSource = "Person Crawler";
 
   return await AbstractMapper.insert(oPerson, dateFields);
+};
+
+exports.insertPersons = async function(aPersons){
+  return await Promise.all(aPersons.map(async (v)=>exports.insertPerson(v)));
 };
 
 exports.updatePerson = async function(oPerson){

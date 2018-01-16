@@ -17,6 +17,21 @@ exports.getMatchById = async function(id) {
   return await AbstractMapper.getById(id, exports.mapDBAnswerToClassObject);
 };
 
+exports.getMatchByCBFNumber = async function(matchId){
+  var response = await db.find({
+    selector : {
+      type : "MatchSoccer",
+      SeasonMatchNumber : Number.parseInt(matchId)
+    }
+  });
+
+  if(response && response.docs && response.docs.length > 0){
+    return exports.mapDBAnswerToClassObject(response.docs[0]);
+  }else{
+    return null;
+  }
+};
+
 exports.getMatchByTeamsAndRound = async function(homeTeamId, awayTeamId, round){
   var response = await db.find({
     selector : {
@@ -32,6 +47,7 @@ exports.getMatchByTeamsAndRound = async function(homeTeamId, awayTeamId, round){
     return null;
   }
 };
+
 
 exports.updateMatch = async function(oMatch){
   oMatch.LastUpdate = new Date();

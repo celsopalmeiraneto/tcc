@@ -1,146 +1,122 @@
-{
-    "docs": [
-        {
-            "_id": "teamAtleticoGO",
-            "_rev": "1-60812b6ca549f413e8f5975824557ec1",
-            "type": "SoccerTeam",
-            "Name": "Atlético-GO",
-            "FullName": "Atlético-GO"
-        },
-        {
-            "_id": "teamAtleticoMG",
-            "_rev": "1-30b1c3fcf64999c7102ea65282ab80ce",
-            "type": "SoccerTeam",
-            "Name": "Atlético-MG",
-            "FullName": "Atlético-MG"
-        },
-        {
-            "_id": "teamAtleticoPR",
-            "_rev": "1-4bdd416f2178fb67b5c261e3f6d067d6",
-            "type": "SoccerTeam",
-            "Name": "Atlético-PR",
-            "FullName": "Atlético-PR"
-        },
-        {
-            "_id": "teamAvai",
-            "_rev": "1-014c0534040a6a1df7439806000e25b6",
-            "type": "SoccerTeam",
-            "Name": "Avaí",
-            "FullName": "Avaí"
-        },
-        {
-            "_id": "teamBahia",
-            "_rev": "1-ed953513f095a81a457465e4fed06ab2",
-            "type": "SoccerTeam",
-            "Name": "Bahia",
-            "FullName": "Bahia"
-        },
-        {
-            "_id": "teamBotafogo",
-            "_rev": "1-aab52a0eae116271fd0b983885f072fc",
-            "type": "SoccerTeam",
-            "Name": "Botafogo",
-            "FullName": "Botafogo"
-        },
-        {
-            "_id": "teamChapecoense",
-            "_rev": "1-a2850f211aadd559211aead25bcfebc6",
-            "type": "SoccerTeam",
-            "Name": "Chapecoense",
-            "FullName": "Chapecoense"
-        },
-        {
-            "_id": "teamCorinthians",
-            "_rev": "1-dd10f59d170edf5db396e014f4446546",
-            "type": "SoccerTeam",
-            "Name": "Corinthians",
-            "FullName": "Corinthians"
-        },
-        {
-            "_id": "teamCoritiba",
-            "_rev": "1-3ccc16edbe4fd58c13acc50818fc59e4",
-            "type": "SoccerTeam",
-            "Name": "Coritiba",
-            "FullName": "Coritiba"
-        },
-        {
-            "_id": "teamCruzeiro",
-            "_rev": "1-1f2c0cfdafcddcfeb7fcc95c1446d04a",
-            "type": "SoccerTeam",
-            "Name": "Cruzeiro",
-            "FullName": "Cruzeiro"
-        },
-        {
-            "_id": "teamFlamengo",
-            "_rev": "1-e40b116bc15ed6724409e214297de027",
-            "type": "SoccerTeam",
-            "Name": "Flamengo",
-            "FullName": "Flamengo"
-        },
-        {
-            "_id": "teamFluminense",
-            "_rev": "1-6fb262ad0f28823fe5d9410ea0d7db90",
-            "type": "SoccerTeam",
-            "Name": "Fluminense",
-            "FullName": "Fluminense"
-        },
-        {
-            "_id": "teamGremio",
-            "_rev": "1-8a80651caaba7c84b7cb95d66bf5f4d0",
-            "type": "SoccerTeam",
-            "Name": "Grêmio",
-            "FullName": "Grêmio"
-        },
-        {
-            "_id": "teamPalmeiras",
-            "_rev": "1-d165bbb6437e45023831fd483ee79cd2",
-            "type": "SoccerTeam",
-            "Name": "Palmeiras",
-            "FullName": "Palmeiras"
-        },
-        {
-            "_id": "teamPontePreta",
-            "_rev": "1-2bffb7a350a4b81fa720021538a7233b",
-            "type": "SoccerTeam",
-            "Name": "Ponte Preta",
-            "FullName": "Ponte Preta"
-        },
-        {
-            "_id": "teamSantos",
-            "_rev": "1-a869c2d550d854d27d0bfbcbce4b24e8",
-            "type": "SoccerTeam",
-            "Name": "Santos",
-            "FullName": "Santos"
-        },
-        {
-            "_id": "teamSaoPaulo",
-            "_rev": "1-be798808d8b498dbd9d33cf1edc11c34",
-            "type": "SoccerTeam",
-            "Name": "São Paulo",
-            "FullName": "São Paulo"
-        },
-        {
-            "_id": "teamSport",
-            "_rev": "1-a0664754e7cf018b1a7a35623e753767",
-            "type": "SoccerTeam",
-            "Name": "Sport",
-            "FullName": "Sport"
-        },
-        {
-            "_id": "teamVasco",
-            "_rev": "1-e0c2755d3ed938b8ff3c55e60337f729",
-            "type": "SoccerTeam",
-            "Name": "Vasco",
-            "FullName": "Vasco"
-        },
-        {
-            "_id": "teamVitoria",
-            "_rev": "1-020c3daa881a1cc27bd504740855c970",
-            "type": "SoccerTeam",
-            "Name": "Vitória",
-            "FullName": "Vitória"
-        }
-    ],
-    "bookmark": "g1AAAABGeJzLYWBgYMpgSmHgKy5JLCrJTq2MT8lPzkzJBYpzl6Qm5oZlluQXZSaClHDAlKBLZgEA0YEV1Q",
-    "warning": "no matching index found, create an index to optimize query time"
-}
+"docs": [
+    {
+        "_id": "teamAtleticoGO",
+        "type": "SoccerTeam",
+        "Name": "Atlético-GO",
+        "FullName": "Atlético-GO"
+    },
+    {
+        "_id": "teamAtleticoMG",
+        "type": "SoccerTeam",
+        "Name": "Atlético-MG",
+        "FullName": "Atlético-MG"
+    },
+    {
+        "_id": "teamAtleticoPR",
+        "type": "SoccerTeam",
+        "Name": "Atlético-PR",
+        "FullName": "Atlético-PR"
+    },
+    {
+        "_id": "teamAvai",
+        "type": "SoccerTeam",
+        "Name": "Avaí",
+        "FullName": "Avaí"
+    },
+    {
+        "_id": "teamBahia",
+        "type": "SoccerTeam",
+        "Name": "Bahia",
+        "FullName": "Bahia"
+    },
+    {
+        "_id": "teamBotafogo",
+        "type": "SoccerTeam",
+        "Name": "Botafogo",
+        "FullName": "Botafogo"
+    },
+    {
+        "_id": "teamChapecoense",
+        "type": "SoccerTeam",
+        "Name": "Chapecoense",
+        "FullName": "Chapecoense"
+    },
+    {
+        "_id": "teamCorinthians",
+        "type": "SoccerTeam",
+        "Name": "Corinthians",
+        "FullName": "Corinthians"
+    },
+    {
+        "_id": "teamCoritiba",
+        "type": "SoccerTeam",
+        "Name": "Coritiba",
+        "FullName": "Coritiba"
+    },
+    {
+        "_id": "teamCruzeiro",
+        "type": "SoccerTeam",
+        "Name": "Cruzeiro",
+        "FullName": "Cruzeiro"
+    },
+    {
+        "_id": "teamFlamengo",
+        "type": "SoccerTeam",
+        "Name": "Flamengo",
+        "FullName": "Flamengo"
+    },
+    {
+        "_id": "teamFluminense",
+        "type": "SoccerTeam",
+        "Name": "Fluminense",
+        "FullName": "Fluminense"
+    },
+    {
+        "_id": "teamGremio",
+        "type": "SoccerTeam",
+        "Name": "Grêmio",
+        "FullName": "Grêmio"
+    },
+    {
+        "_id": "teamPalmeiras",
+        "type": "SoccerTeam",
+        "Name": "Palmeiras",
+        "FullName": "Palmeiras"
+    },
+    {
+        "_id": "teamPontePreta",
+        "type": "SoccerTeam",
+        "Name": "Ponte Preta",
+        "FullName": "Ponte Preta"
+    },
+    {
+        "_id": "teamSantos",
+        "type": "SoccerTeam",
+        "Name": "Santos",
+        "FullName": "Santos"
+    },
+    {
+        "_id": "teamSaoPaulo",
+        "type": "SoccerTeam",
+        "Name": "São Paulo",
+        "FullName": "São Paulo"
+    },
+    {
+        "_id": "teamSport",
+        "type": "SoccerTeam",
+        "Name": "Sport",
+        "FullName": "Sport"
+    },
+    {
+        "_id": "teamVasco",
+        "type": "SoccerTeam",
+        "Name": "Vasco",
+        "FullName": "Vasco"
+    },
+    {
+        "_id": "teamVitoria",
+        "type": "SoccerTeam",
+        "Name": "Vitória",
+        "FullName": "Vitória"
+    }
+]
