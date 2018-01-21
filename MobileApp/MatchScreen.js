@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
-import { Card, List, ListItem, Text } from 'react-native-elements';
-import Spinner from 'react-native-loading-spinner-overlay';
+import React, {Component} from "react";
+import {Image, ScrollView, StyleSheet, View} from "react-native";
+import {Card, ListItem, Text} from "react-native-elements";
+import Spinner from "react-native-loading-spinner-overlay";
+import SoccerStandings from "./components/SoccerStandings.js";
 
-import DataRepo from './DataRepo';
-import * as Util from './Util';
-
-
+import DataRepo from "./DataRepo";
+import * as Util from "./Util";
 
 export default class MatchScreen extends Component {
   constructor(props){
@@ -20,11 +19,14 @@ export default class MatchScreen extends Component {
       homeLineUp : null,
       awayLineUp : null,
       news : []
-    }
+    };
   }
-  static navigationOptions = ({navigation}) => ({
-    title : navigation.state.params.matchDesc
-  });
+
+  static navigationOptions ({navigation}) {
+    return {
+      title: navigation.state.params.matchDesc
+    };
+  }
 
   componentDidMount(){
     let dr = new DataRepo();
@@ -85,28 +87,28 @@ export default class MatchScreen extends Component {
   }
 
   render(){
-    const { navigate } = this.props.navigation;
+    const {navigate} = this.props.navigation;
     let matchImage = null;
     if(this.state.match){
       matchImage = <Image
         style = {{width : 150, height : 150}}
         source={{uri : Util.getImageUrl(this.state.match._id)}}
-      />
+      />;
     }
 
     //
     //
     let homeLineUp = null;
     if(this.state.homeLineUp){
-      homeLineUp = this.state.homeLineUp.LineUpComposition.map((v, i)=>{
+      homeLineUp = this.state.homeLineUp.LineUpComposition.map((v)=>{
         return (
           <ListItem
             key = {v.PersonId}
             title = {`${v.ShirtNumber} - ${v.person.Nickname} (${v.Starter ? "T" : "R"})`}
             hideChevron = {true}
           />
-        )
-      })
+        );
+      });
     }
 
 
@@ -171,6 +173,7 @@ export default class MatchScreen extends Component {
             </Card>
           </View>
         </View>
+        <SoccerStandings />
       </ScrollView>
     );
   }

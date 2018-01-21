@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
-import { View } from 'react-native';
-import { StackNavigator } from 'react-navigation';
-import HomeScreen from './HomeScreen';
-import MatchScreen from './MatchScreen';
-import OpenURL from './OpenURL';
+import React, { Component } from "react";
+import { StackNavigator } from "react-navigation";
+import HomeScreen from "./HomeScreen";
+import MatchScreen from "./MatchScreen";
+import OpenURL from "./OpenURL";
 
 
-const BasicApp = StackNavigator({
-  Main : { screen : HomeScreen },
-  Match : { screen : MatchScreen },
-  OpenURL : { screen : OpenURL }
-})
+const AgoraNaTV = StackNavigator({
+  Home: { screen : HomeScreen },
+  Match: { screen : MatchScreen },
+  OpenURL: { screen : OpenURL }
+}, {
+  initialRouteName: "Home"
+});
 
 export default class App extends Component{
   constructor(props){
@@ -18,6 +19,6 @@ export default class App extends Component{
   }
 
   render(){
-    return <BasicApp />;
+    return <AgoraNaTV />;
   }
 }

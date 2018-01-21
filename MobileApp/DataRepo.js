@@ -59,6 +59,7 @@ export default class DataRepo{
         method : "GET"
       });
       let responseJson = await response.json();
+      if(!responseJson || !responseJson.rows) return [];
       return await Promise.all(responseJson.rows.map(async (v) => {
         v = v.doc;
         v.homeTeamName = teams.find(t => t.id == v.HomeTeamId);
@@ -71,6 +72,7 @@ export default class DataRepo{
       }));
     }catch(e){
       console.log(e);
+      return [];
     }
   }
 

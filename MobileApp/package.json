@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "eslint": "^4.16.0",
+    "eslint-plugin-react": "^7.5.1",
+    "eslint-plugin-react-native": "^3.2.1",
     "jest-expo": "^22.0.0",
     "react-native-scripts": "1.7.0",
     "react-test-renderer": "16.0.0-beta.5"
@@ -27,7 +30,7 @@
     "react-native": "^0.51.0",
     "react-native-elements": "^0.18.4",
     "react-native-loading-spinner-overlay": "^0.5.2",
-    "react-navigation": "^1.0.0-beta.21",
-    "react-native-vector-icons" :"^4.2.0"
+    "react-native-vector-icons": "^4.2.0",
+    "react-navigation": "^1.0.0-beta.21"
   }
 }

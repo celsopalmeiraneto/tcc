@@ -3,15 +3,22 @@
         "es6": true,
         "node": true
     },
-    "extends": "eslint:recommended",
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parserOptions": {
         "sourceType": "module",
-        "ecmaVersion" : 2017
+        "ecmaVersion" : 8,
+        "ecmaFeatures": {
+          "jsx": true
+        }
     },
     "globals":{
         "document" : false,
         "window" : false
     },
+    "plugins":[
+      "react",
+      "react-native"
+    ],
     "rules": {
         "indent": [
             "error",
@@ -20,6 +27,14 @@
         "linebreak-style": [
             "error",
             "unix"
+        ],
+        "object-curly-spacing":[
+          "error",
+          "never"
+        ],
+        "no-multiple-empty-lines":[
+          "error",
+          {"max" : 2}
         ],
         "quotes": [
             "error",
