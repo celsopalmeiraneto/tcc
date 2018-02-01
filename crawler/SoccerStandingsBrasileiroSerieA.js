@@ -31,7 +31,7 @@ class SoccerStandingsBrasileiroSerieA {
     standings.AsOf = new Date();
     standings.LastUpdate = new Date();
     standings.UpdateSource = "Standings Crawler";
-    standings._id = `StandingsAsOf${new Date().toISOString()}`;
+    standings._id = `standingsAsOf${new Date().toISOString()}_${standings.ChampionshipID}`;
 
     let mapper = new SoccerStandingsMapper();
 

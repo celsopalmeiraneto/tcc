@@ -13,7 +13,8 @@
     },
     "globals":{
         "document" : false,
-        "window" : false
+        "window" : false,
+        "fetch" : false
     },
     "plugins":[
       "react",
@@ -27,6 +28,9 @@
         "linebreak-style": [
             "error",
             "unix"
+        ],
+        "no-console":[
+          "warn"
         ],
         "object-curly-spacing":[
           "error",

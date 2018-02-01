@@ -1,4 +1,4 @@
-import { couchSettings } from "./Util";
+import {couchSettings} from "./Util";
 
 export default class DataRepo{
   constructor() {
@@ -35,6 +35,28 @@ export default class DataRepo{
     }
   }
 
+  async getLatestStandingForChampionship(championshidId){
+    try {
+      let response = await fetch(this.formatDatabaseString()+"_find",{
+        method: "POST",
+        body: JSON.stringify({
+          selector: {
+            type: "SoccerStandings",
+            ChampionshipID: championshidId
+          },
+          limit: 1
+        }),
+        headers: new Headers({
+          "Content-Type": "application/json"
+        })
+      });
+      response = await response.json();
+      return response.docs.pop();
+    } catch (e) {
+      return e;
+    }
+  }
+
   async getLineUpForMatch(matchId){
     try{
       let response = await fetch(this.formatDatabaseString()+`_design/LineUpDocs/_view/lineUpByMatchAndTeam?startkey=["${matchId}"]&endkey=["${matchId}","z"]&include_docs=true`, {
@@ -48,7 +70,7 @@ export default class DataRepo{
       }));
       return responseJson;
     }catch(e){
-      console.log(e);
+      throw e;
     }
   }
 

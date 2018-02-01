@@ -1,6 +1,7 @@
-import React, { Component } from "react";
-import { ScrollView, StatusBar, Text, View } from "react-native";
-import { Button, Card } from "react-native-elements";
+import React, {Component} from "react";
+import {ScrollView, StatusBar, Text, View} from "react-native";
+import {Button, Card} from "react-native-elements";
+import SoccerStandings from "./components/SoccerStandings.js";
 import * as Util from "./Util";
 
 import DataRepo from "./DataRepo";
@@ -34,7 +35,7 @@ export default class HomeScreen extends Component {
   }
 
   render(){
-    const { navigate } = this.props.navigation;
+    const {navigate} = this.props.navigation;
 
     return (
       <View>
@@ -63,6 +64,7 @@ export default class HomeScreen extends Component {
             })
           }
         </ScrollView>
+        <SoccerStandings />
       </View>
     );
   }
